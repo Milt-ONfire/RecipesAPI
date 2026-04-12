@@ -1,0 +1,32 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build
+bin/
+obj/
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# VSCode / otros
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Archivos sensibles
+appsettings.Development.json
+
+# Binarios
+*.exe
+*.zip
