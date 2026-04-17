@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RecipesAPI.Models;
 using System.Security.Claims;
+using Google.Apis.Auth;
+using System.Text.Json;
 
 namespace RecipesAPI.Services
 {
@@ -18,24 +21,71 @@ namespace RecipesAPI.Services
             _httpContextAccessor = httpContextAccessor;
             _imageService = imageService;
         }
-        public async Task<object> AddUser(Usuario usuario)
+        public async Task<object> AddUser(RegisterDtoRequest request)
         {
-            var passwordHasher = new PasswordHasher<Usuario>();
-            usuario.Password = passwordHasher.HashPassword(usuario, usuario.Password);
-
-            await _context.Usuarios.AddAsync(usuario);
-
+            Console.WriteLine(JsonSerializer.Serialize(request));
             try
             {
-                int filasAfectadas = await _context.SaveChangesAsync();
-                return (new { message = "usuario guardado" });
+                Usuario user = null;
+
+                if (!string.IsNullOrEmpty(request.Token))
+                {
+                    var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token);
+
+                    user = await _dbSet.FirstOrDefaultAsync(u => u.Email == payload.Email);
+
+                    if (user == null)
+                    {
+                                            
+                        user = new Usuario
+                        {
+                            NombreUsuario = payload.Name,
+                            Email = payload.Email,
+                            Imagen = payload.Picture,
+                            Password = null,
+                            isGoogle = true
+                        };
+
+                        _dbSet.Add(user);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return new { message = "usuario Google", user };
+                }
+
+                // 🟢 NORMAL
+                if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+                    return new { message = "Email y password requeridos" };
+
+                var existingUser = _context.Usuarios
+                    .FirstOrDefault(u => u.Email == request.Email);
+
+                if (existingUser != null)
+                    return new { message = "El usuario ya existe" };
+
+                var passwordHasher = new PasswordHasher<Usuario>();
+
+                user = new Usuario
+                {
+                    NombreUsuario = request.UserName ?? request.Email,
+                    Email = request.Email,
+                    Password = passwordHasher.HashPassword(null!, request.Password),
+                    isGoogle = false
+                };
+
+                _context.Usuarios.Add(user);
+                await _context.SaveChangesAsync();
+
+                return new { message = "usuario guardado", user };
             }
             catch (Exception ex)
             {
-                return new { message = "Error", error = ex.Message };
+                return new
+                {
+                    message = "Error",
+                    error = ex.InnerException?.Message ?? ex.Message
+                };
             }
-
-
         }
 
         public async Task<List<Usuario>> AllUsers()

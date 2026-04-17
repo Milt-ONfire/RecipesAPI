@@ -12,7 +12,9 @@ public partial class Usuario
 
     public string? Imagen { get; set; }
 
-    public string Password { get; set; } = "";
+    public bool isGoogle { get; set; }
+
+    public string? Password { get; set; } = "";
 
     [JsonIgnore]
     public virtual ICollection<Receta> Receta { get; set; } = new List<Receta>();

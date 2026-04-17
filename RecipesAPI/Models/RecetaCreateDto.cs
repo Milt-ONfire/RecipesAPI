@@ -7,8 +7,6 @@
         public string Descripcion { get; set; } = null!;
         public string? Categoria { get; set; }
         public int IdCategoria { get; set; }
-        public string? Imagen { get; set; }
-
         public List<IngredienteRecetaDto>? Ingredientes { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace RecipesAPI.Controllers
 
         [HttpPost]
         [Route("agregar")]
-        public async Task<IActionResult> AgregarUsuario([FromForm] Usuario usuario)
+        public async Task<IActionResult> AgregarUsuario([FromBody] RegisterDtoRequest usuario)
         {
             var usuarioAgregado = await _usuarioService.AddUser(usuario);
             return Ok(usuarioAgregado);

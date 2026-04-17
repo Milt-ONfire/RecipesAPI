@@ -146,7 +146,7 @@ public partial class RecipesDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("contraseña");
             entity.Property(e => e.Email)
-                .HasMaxLength(20)
+                .HasMaxLength(50)
                 .HasColumnName("email");
             entity.Property(e => e.Imagen)
                 .HasMaxLength(255)
@@ -154,6 +154,8 @@ public partial class RecipesDbContext : DbContext
             entity.Property(e => e.NombreUsuario)
                 .HasMaxLength(100)
                 .HasColumnName("nombre_usuario");
+            entity.Property(e => e.isGoogle)
+                .HasColumnName("isGoogle");
         });
 
         modelBuilder.Entity<Categoria>(entity =>
