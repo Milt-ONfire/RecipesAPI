@@ -18,7 +18,7 @@ namespace RecipesAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("addRating")]
-        public async Task<IActionResult> addRating([FromBody] Calificacion rating)
+        public async Task<IActionResult> addRating([FromBody] CalificacionRequest rating)
         {
             try
             {
@@ -41,6 +41,21 @@ namespace RecipesAPI.Controllers
                 return Ok(avgRating);
             }
             catch (Exception ex)
+            {
+                return BadRequest(new { message = "Ocurrió un error", error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("ratingByRecipe")]
+        public async Task<IActionResult> getRatingsByRecipe([FromBody] int idRecipe)
+        {
+            try
+            {
+                var calificaciones = await _icalificacionService.GetRatingsByrecipeId(idRecipe);
+                return Ok(calificaciones);
+            }
+            catch(Exception ex)
             {
                 return BadRequest(new { message = "Ocurrió un error", error = ex.Message });
             }

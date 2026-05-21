@@ -23,7 +23,7 @@ namespace RecipesAPI.Services
 
         public async Task<List<Ingrediente>> AllIngredients()
         {
-            return await _ingrediente.ToListAsync();
+            return await _ingrediente.OrderBy(i => EF.Functions.Collate( i.NombreIngrediente,"SQL_Latin1_General_CP1_CI_AS")).ToListAsync();
         }
 
         public Task<int> RemoveIngredient(Ingrediente ingrediente)

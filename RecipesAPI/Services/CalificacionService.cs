@@ -18,7 +18,7 @@ namespace RecipesAPI.Services
             _irecetaService = irecetaService;
         }
 
-        public async Task<object> AddRating(Calificacion rating)
+        public async Task<object> AddRating(CalificacionRequest rating)
         {
             var idUser = _irecetaService?.GetCurrentUserId();
 
@@ -63,5 +63,10 @@ namespace RecipesAPI.Services
             return avgEnd;
         }
 
+        public async Task<object> GetRatingsByrecipeId(int recipeId)
+        {
+            var recipes = await _dbSet.Where(c => c.IdReceta == recipeId).Include(c => c.Usuario).ToListAsync();
+            return recipes;
+        }
     }
 }
