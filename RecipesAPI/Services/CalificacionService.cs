@@ -42,7 +42,12 @@ namespace RecipesAPI.Services
                 return new { message = "Este usuario ya calificó esta receta" };
             }
 
-            var calificacion = new Calificacion
+            if (rating.Rating == null || rating.Rating == 0)
+            {
+                return new { message = "Debe ingresar una calificación" };
+            }
+
+                var calificacion = new Calificacion
             {
                 IdUsuario = (int)idUser,
                 IdReceta = rating.IdReceta,
