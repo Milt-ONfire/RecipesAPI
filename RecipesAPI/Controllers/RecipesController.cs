@@ -115,6 +115,22 @@ namespace RecipesAPI.Controllers
         }
 
         [Authorize]
+        [HttpDelete]
+        [Route("eliminarRecetaGuardada")]
+        public async Task<IActionResult> EliminarRecetaGuardada(int idReceta)
+        {
+            try
+            {
+                var recetaDeleted = await _irecetaService.RemoveRecipeFromSaved(idReceta);
+                return Ok(recetaDeleted);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Ocurrió un error", error = ex.Message });
+            }
+        }
+
+        [Authorize]
         [HttpGet]
         [Route("recetasGuardadasUsuario")]
         public async Task<IActionResult> ObtenerRecetasGuardadas()

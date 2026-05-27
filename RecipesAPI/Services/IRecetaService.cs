@@ -11,6 +11,7 @@ namespace RecipesAPI.Services
         Task<List<Receta>> RecipeByIngredient(List<int> ingredientId);
         Task<List<Receta>> GetRandomRecipes(int cantidad);
         Task<object> AddRecipeToSaved(RecetaGuardadaUsuario recetaGuardadaDto);
+        Task<object> RemoveRecipeFromSaved(int idRecipe);
         Task<List<Receta>> GetSavedRecipesByUser();
         int? GetCurrentUserId();
     }

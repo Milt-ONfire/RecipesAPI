@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipesAPI.Models;
+using System.CodeDom;
 using System.Security.Claims;
 
 namespace RecipesAPI.Services
@@ -193,9 +194,38 @@ namespace RecipesAPI.Services
             }
 
             _dbSetRecetaGuardadaUsuario.Add(recetaGuardadaDto);
-            Console.WriteLine(recetaGuardadaDto.IdRecetaGuardada);
             await _context.SaveChangesAsync();
             return recetaGuardadaDto;
+        }
+
+        public async Task<object> RemoveRecipeFromSaved(int idRecipe)
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null)
+            {
+                // manejo: si no hay usuario, puedes lanzar excepción o devolver error
+                throw new InvalidOperationException("Usuario no autenticado.");
+            }
+
+            var encontrarReceta = await _dbSetRecetaGuardadaUsuario
+                                            .Where(rg => rg.IdReceta == idRecipe && rg.IdUsuario == userId).ToListAsync();
+
+            if (encontrarReceta == null)
+            {
+                return new { message = "no hay receta con id " + idRecipe + " y usuario # " + userId + " guardada" };
+            }
+
+            var recetasEliminadas = new List<RecetaGuardadaUsuario>();
+
+            foreach (var item in encontrarReceta)
+            {
+                
+                var recetaEliminada = _dbSetRecetaGuardadaUsuario.Remove(item);
+                await _context.SaveChangesAsync();
+                recetasEliminadas.Add(item);
+            }
+            
+            return new { message = "receta eliminada", recetasEliminadas };
         }
 
         public async Task<bool> GetSavedRecipeByUser(int idRecipe)
